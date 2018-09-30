@@ -1,9 +1,7 @@
-// PIANO LED
-// Nicolas de Ory 2017
+// PIANO LED 2.0
+// Nicolás de Ory 2017-2018
 // Programa que funciona con la tira de LEDs WS2812B y el teclado Yamaha CLP320
-// MIRAR ISSUE GITHUB MIDI LIB
-// Deberiamos comprobar available SRAM en void loop() para ver que pasa
-//#define FASTLED_ALLOW_INTERRUPTS 0
+// Works with the WS2812B LED strip and the Yamaha CLP320 keyboard
 #include <MIDI.h>
 #include "FastLED.h"
 #include <AltSoftSerial.h>
@@ -11,14 +9,13 @@
 FASTLED_USING_NAMESPACE
 
 #define button_pin  5
-#define POTENTIOMETER_PIN 5 // analog 5
+#define POTENTIOMETER_PIN 5
 
 #define DATA_PIN    3
-//#define CLK_PIN   4
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 #define NUM_LEDS    76
-#define PEDAL_STRENGTH 30 // CHANGE?? TO VARIABLE
+#define PEDAL_STRENGTH 30
 #define NO_PEDAL_STRENGTH 60
 #define NOTE_HOLD_FADE 5
 
@@ -110,23 +107,22 @@ CRGBPalette16 mode4Palettes[] = {
 
 #define MODE5_PALETTE_COUNT 2
 
-//CRGBPalette16 mode4Pal = GPRainbow;
 CRGBPalette16 mode5Palettes[] = {
   GPVelocidad,
   GPHot
 };
 
 
-uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
-uint8_t gHue = 0; // rotating "base color" used by many of the patterns
+uint8_t gCurrentPatternNumber = 0; // Index number of which animation is current
+uint8_t gHue = 0; // rotating "base color" used by some animations
 uint8_t customHue = 0;
 
 uint8_t mode4PalIndex;
 uint8_t mode5PalIndex;
 
-struct MidiSettings : public midi::DefaultSettings
+struct MidiSettings : public midi::DefaultSettings // The sketch will probably work fine without these custom settings.
 {
-    static const bool UseRunningStatus = true; // My devices seem to be ok with it.
+    static const bool UseRunningStatus = true;
     static const unsigned SysExMaxSize = 2;
 };
 MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, MidiSettings);
@@ -139,19 +135,19 @@ void OnNoteOn(byte channel, byte pitch, byte velocity) {
   byte ld = map(pitchcheck,19,107,NUM_LEDS-2,1);
   onLeds[ld] = true;
    switch (mode) {
-      case 2:
+      case 2: // FIXED COLOR
         leds[ld].setHSV(customHue, 150, 255);
         break;
-       case 3:
+       case 3: // FIXED COLOR - less saturation
         leds[ld].setHSV(customHue, 60, 255);
         break;
-       case 4:
+       case 4: // PALETTE
         leds[ld] = ColorFromPalette(mode4Palettes[mode4PalIndex],map(pitchcheck,19,107,0,240));
         break;
-       case 5:
+       case 5: // VELOCITY 
         leds[ld] = ColorFromPalette(mode5Palettes[mode5PalIndex],map(velocitycheck,0,127,0,240));
         break;
-       case 6:
+       case 6: // ROTATING HUE
         leds[ld].setHSV(gHue, customHue, 255);
         break;
        case 7: // FADE AROUND NOTE
@@ -181,7 +177,7 @@ void OnNoteOff(byte channel, byte pitch, byte velocity) {
 
 }
 
-void OnControlChange(byte channel, byte number, byte value) { // This might be inexact== FALLO CON LAS LUCES
+void OnControlChange(byte channel, byte number, byte value) {
  if (number == 64) {
   if (value > 63) {
     sustain = true; 
@@ -223,7 +219,6 @@ void setup() {
 typedef void (*SimplePatternList[])();
 SimplePatternList gPatterns = { rainbow, rainbowWithGlitter, confetti, sinelon};
 
-//int lastAnalogRead;
 int currAnalogRead;
 void loop() {
  
@@ -264,7 +259,6 @@ void loop() {
   } else {
     customHue = map(currAnalogRead,0,1023,0,255);
   }
-  //lastAnalogRead = currAnalogRead;
  //////
  
  MIDI.read();
@@ -280,7 +274,7 @@ EVERY_N_MILLISECONDS(50) { if (mode==6) { gHue++; } }
 
 EVERY_N_MILLISECONDS(40) {
   if (mode != 1) {
-    for (byte i=0;i < NUM_LEDS; i++) { // THIS MIGHT NOT TURN OFF THE LEDS"!!
+    for (byte i=0;i < NUM_LEDS; i++) {
           if (leds[i].getAverageLight() == 0) {
               onLeds[i] = false;
               leds[i] = CRGB::Black;
@@ -303,7 +297,7 @@ EVERY_N_SECONDS(20) { if (mode == 1) { nextPattern(); }}
 
 }
 
-// PASSIVE PATTERNS (MODE 0)
+// PASSIVE PATTERNS FOR MODE 1 // TAKEN FROM FASTLED EXAMPLES
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 void nextPattern()
