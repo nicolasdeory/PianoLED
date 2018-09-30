@@ -30,7 +30,7 @@ Use the button to toggle between 6 modes:
   - **Mode 4**: Palette (color depends on the note pitch, follows a gradient pattern - potentiometer navigates through 6 palettes)
   - **Mode 5**: Velocity Palette (same as mode 4, but color depends on how hard the key is pressed - 2 palettes)
   - **Mode 6**: Hue Cycle (notes light up with a fixed color that changes over time)
-  - **Mode 7**: Echo mode (when a note is played, surrounding LEDs light up in a 'burst' fashion)
+  - **Mode 7**: Echo/Burst (when a note is played, surrounding LEDs light up in a 'burst' fashion)
 
 
 Enjoy!
