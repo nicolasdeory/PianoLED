@@ -21,7 +21,7 @@ There are implementations for 7 lighting modes.
  - Color HSV values, palettes (right now there are 6 palettes that can be navigated through with the potentiometer)
  - New modes can be added fairly easily.
  
-## How to use
+## Usage
 Use the button to toggle between 6 modes:
   - **Mode 0**: Off
   - **Mode 1**: Passive (cycle between different LED animations, e.g. rainbow, trail, sparkles)
