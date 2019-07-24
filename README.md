@@ -14,6 +14,7 @@ There are implementations for 7 lighting modes.
   - An optional info LED to pin 13
   - An LED Strip supported by the [FastLED library](https://github.com/FastLED/FastLED).
   - A piano or anything that generates MIDI data
+  - Optionally, a PCB that connects all of these components together. A design for it [can be found here](https://www.pcbway.com/project/shareproject/PianoLED___Light_up_the_notes_as_you_play.html).
   
 **Customizable parameters:**
  - The LED strip model, color order and number of LEDs can be configured at the top of the file (default is a strip of 74 _WS2812B_ LEDs, color order _GRB_, suitable for a regular 8-octave digital piano.
